@@ -43,13 +43,15 @@ echo "=== Cloning repositories ==="
 
 WORKSPACES="/workspaces"
 
-if [ ! -d "$WORKSPACES/rails-otel-demo" ]; then
+if [ ! -d "$WORKSPACES/rails-otel-demo/.git" ]; then
   echo "Cloning rails-otel-demo..."
+  rm -rf "$WORKSPACES/rails-otel-demo"
   git clone https://github.com/wsmoak/rails-otel-demo "$WORKSPACES/rails-otel-demo"
 fi
 
-if [ ! -d "$WORKSPACES/django-polls-playwright-demo" ]; then
+if [ ! -d "$WORKSPACES/django-polls-playwright-demo/.git" ]; then
   echo "Cloning django-polls-playwright-demo..."
+  rm -rf "$WORKSPACES/django-polls-playwright-demo"
   git clone https://github.com/wsmoak/django-polls-playwright-demo "$WORKSPACES/django-polls-playwright-demo"
 fi
 
