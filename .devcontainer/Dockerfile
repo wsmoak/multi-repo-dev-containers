@@ -18,3 +18,19 @@ RUN PG_VERSION=$(ls /etc/postgresql/) \
 
 # Install latest bundler (apt version lags behind what Gemfile.lock expects)
 RUN gem install bundler
+
+# Clone repos to a staging area (DevPod overwrites /workspaces/ with a
+# volume mount, so we stage here and copy at container start time)
+RUN mkdir -p /opt/prebuilt-repos \
+    && git clone https://github.com/wsmoak/rails-otel-demo /opt/prebuilt-repos/rails-otel-demo \
+    && git clone https://github.com/wsmoak/django-polls-playwright-demo /opt/prebuilt-repos/django-polls-playwright-demo
+
+# Pre-install Django dependencies
+WORKDIR /opt/prebuilt-repos/django-polls-playwright-demo
+RUN pip install --upgrade pip && pip install -e .
+
+# Pre-install Rails dependencies
+WORKDIR /opt/prebuilt-repos/rails-otel-demo
+RUN bundle install
+
+WORKDIR /workspaces

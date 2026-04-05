@@ -3,27 +3,24 @@ set -e
 
 echo "=== OpenSWE Multi-Repo Post-Create ==="
 
-# Clone repos into /workspaces (DevPod manages this dir as a volume,
-# so repos baked into the Docker image at /workspaces/ are not available)
 WORKSPACES="/workspaces"
+PREBUILT="/opt/prebuilt-repos"
 
-if [ ! -d "$WORKSPACES/rails-otel-demo/.git" ]; then
-  echo "Cloning rails-otel-demo..."
-  rm -rf "$WORKSPACES/rails-otel-demo"
-  git clone https://github.com/wsmoak/rails-otel-demo "$WORKSPACES/rails-otel-demo"
-else
-  echo "Pulling latest rails-otel-demo..."
-  git -C "$WORKSPACES/rails-otel-demo" pull --ff-only || true
-fi
-
-if [ ! -d "$WORKSPACES/django-polls-playwright-demo/.git" ]; then
-  echo "Cloning django-polls-playwright-demo..."
-  rm -rf "$WORKSPACES/django-polls-playwright-demo"
-  git clone https://github.com/wsmoak/django-polls-playwright-demo "$WORKSPACES/django-polls-playwright-demo"
-else
-  echo "Pulling latest django-polls-playwright-demo..."
-  git -C "$WORKSPACES/django-polls-playwright-demo" pull --ff-only || true
-fi
+# Copy prebuilt repos into /workspaces (fast local copy vs network clone),
+# then pull to pick up any commits since the image was built.
+for repo in rails-otel-demo django-polls-playwright-demo; do
+  if [ ! -d "$WORKSPACES/$repo/.git" ]; then
+    if [ -d "$PREBUILT/$repo" ]; then
+      echo "Copying prebuilt $repo..."
+      cp -a "$PREBUILT/$repo" "$WORKSPACES/$repo"
+    else
+      echo "Cloning $repo (no prebuilt available)..."
+      git clone "https://github.com/wsmoak/$repo" "$WORKSPACES/$repo"
+    fi
+  fi
+  echo "Pulling latest $repo..."
+  git -C "$WORKSPACES/$repo" pull --ff-only || true
+done
 
 # Start PostgreSQL
 echo "Starting PostgreSQL..."
@@ -50,16 +47,15 @@ psql -U postgres -h 127.0.0.1 -c "GRANT ALL PRIVILEGES ON DATABASE django_polls_
 psql -U postgres -h 127.0.0.1 -c "CREATE USER demo_app_tester WITH PASSWORD 'verysecret';" 2>/dev/null || true
 psql -U postgres -h 127.0.0.1 -c "ALTER USER demo_app_tester CREATEDB;" 2>/dev/null || true
 
-# Run Django migrations
+# Run Django migrations (dependencies pre-installed in image)
 echo "Running Django migrations..."
 cd "$WORKSPACES/django-polls-playwright-demo"
 pip install -e . --quiet
 python3 manage.py migrate --settings=config.settings
 
-# Install Rails dependencies (sudo needed for system gem path)
-echo "Setting up Rails project..."
+# Update Rails dependencies if needed (gems pre-installed in image)
+echo "Updating Rails dependencies..."
 cd "$WORKSPACES/rails-otel-demo"
-sudo gem install bundler
 sudo bundle install --quiet
 
 echo ""
