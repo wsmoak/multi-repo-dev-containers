@@ -12,6 +12,20 @@ sibling directories.
 | django-polls-playwright-demo | /workspaces/django-polls-playwright-demo | wsmoak/django-polls-playwright-demo |
 | agent-projects | /workspaces/agent-projects | wsmoak/agent-projects |
 
+## Branches
+
+Each repo starts on its default branch. The user may ask you to work on a
+specific branch -- use `git checkout <branch>` in the appropriate repo
+directory before reading or modifying files. For example:
+
+```
+git -C /workspaces/agent-projects checkout bmad-plan
+```
+
+The `agent-projects` repo contains project plans and specifications on
+branches. When the user references a plan, story, or spec, check the
+branches of that repo.
+
 ## Multi-Repo Workflow
 
 When your task involves changes to multiple repos:
