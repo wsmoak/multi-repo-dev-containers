@@ -23,7 +23,8 @@ RUN gem install bundler
 # volume mount, so we stage here and copy at container start time)
 RUN mkdir -p /opt/prebuilt-repos \
     && git clone https://github.com/wsmoak/rails-otel-demo /opt/prebuilt-repos/rails-otel-demo \
-    && git clone https://github.com/wsmoak/django-polls-playwright-demo /opt/prebuilt-repos/django-polls-playwright-demo
+    && git clone https://github.com/wsmoak/django-polls-playwright-demo /opt/prebuilt-repos/django-polls-playwright-demo \
+    && git clone https://github.com/wsmoak/agent-projects /opt/prebuilt-repos/agent-projects
 
 # Pre-install Django dependencies
 WORKDIR /opt/prebuilt-repos/django-polls-playwright-demo

@@ -8,7 +8,7 @@ PREBUILT="/opt/prebuilt-repos"
 
 # Copy prebuilt repos into /workspaces (fast local copy vs network clone),
 # then pull to pick up any commits since the image was built.
-for repo in rails-otel-demo django-polls-playwright-demo; do
+for repo in rails-otel-demo django-polls-playwright-demo agent-projects; do
   if [ ! -d "$WORKSPACES/$repo/.git" ]; then
     if [ -d "$PREBUILT/$repo" ]; then
       echo "Copying prebuilt $repo..."

@@ -10,6 +10,7 @@ sibling directories.
 |------|------|--------|
 | rails-otel-demo | /workspaces/rails-otel-demo | wsmoak/rails-otel-demo |
 | django-polls-playwright-demo | /workspaces/django-polls-playwright-demo | wsmoak/django-polls-playwright-demo |
+| agent-projects | /workspaces/agent-projects | wsmoak/agent-projects |
 
 ## Multi-Repo Workflow
 
